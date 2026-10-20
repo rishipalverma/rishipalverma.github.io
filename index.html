@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Rishi Verma: video editor, AI filmmaker and motion designer. AI films, reels, wedding and event edits, animation.">
+<link rel="icon" type="image/svg+xml" href="site/favicon.svg">
+<title>Rishi Verma</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: scrollytelling edit suite. Hero scales away, a pinned "monitor" morphs through 9:16 / 1:1 / 16:9 as you scroll,
+   a word-by-word statement, a pinned horizontal reel of work, then quiet sections. Dark-first like an NLE. */
+:root{
+  --bg:#121216; --bg-2:#1a1a20; --bg-3:#24242c;
+  --fg:#ece8df; --muted:#9a97a5; --line:#2b2b35;
+  --accent:#f2b33d; --accent-ink:#121216; --cool:#8fa6ff;
+  --font-display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --font-body:"Instrument Sans","Helvetica Neue",Arial,sans-serif;
+  --font-mono:"IBM Plex Mono",Consolas,"Courier New",monospace;
+  --gutter:max(16px,env(safe-area-inset-left,0px));
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f3f1ec; --bg-2:#ffffff; --bg-3:#e7e4dc;
+    --fg:#1a191f; --muted:#67656f; --line:#d8d5cd;
+    --accent:#96600a; --accent-ink:#ffffff; --cool:#3f5fd6;
+    color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#f3f1ec; --bg-2:#ffffff; --bg-3:#e7e4dc;
+  --fg:#1a191f; --muted:#67656f; --line:#d8d5cd;
+  --accent:#96600a; --accent-ink:#ffffff; --cool:#3f5fd6;
+  color-scheme:light;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font-family:var(--font-body); font-size:16px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent); outline-offset:3px}
+img,canvas,svg{max-width:100%; display:block}
+.wrap{
+  max-width:1180px; margin-inline:auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+.eyebrow{
+  font-family:var(--font-mono); font-size:.75rem; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--muted); display:flex; align-items:center; gap:12px; margin:0 0 14px;
+}
+.eyebrow::before{content:""; width:10px; height:10px; background:var(--accent); transform:rotate(45deg); flex:none}
+h1,h2,h3{font-family:var(--font-display); text-wrap:balance; margin:0; line-height:.95; letter-spacing:.005em}
+h2{font-size:clamp(2.6rem,7vw,5.5rem); font-weight:900; text-transform:uppercase}
+h3{font-size:1.5rem; font-weight:700; line-height:1.1}
+p{margin:0}
+.lede{font-size:1.125rem; max-width:44ch}
+.line{display:block; overflow:hidden; padding-bottom:.06em; margin-bottom:-.06em}
+.line > span{display:block; will-change:transform}
+
+/* Logo */
+.mark{width:34px; height:34px; flex:none}
+.brand{display:inline-flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:900; font-size:1.35rem; text-transform:uppercase; letter-spacing:.02em; text-decoration:none}
+
+/* Header */
+.top{
+  position:fixed; left:0; right:0; top:0; z-index:20;
+  padding-top:env(safe-area-inset-top,0px);
+  background:color-mix(in srgb,var(--bg) 78%,transparent);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+  transition:transform .45s cubic-bezier(.2,.7,.2,1);
+}
+.top.hide{transform:translateY(-100%)}
+.top .wrap{display:flex; align-items:center; gap:18px; padding-block:10px; flex-wrap:wrap}
+.nav{display:flex; gap:18px; margin-left:auto; flex-wrap:wrap}
+.nav a{text-decoration:none; font-size:.9rem; font-weight:500; color:var(--muted); transition:color .2s}
+.nav a:hover{color:var(--fg)}
+.tc{
+  font-family:var(--font-mono); font-size:.85rem; color:var(--accent);
+  padding:4px 8px; border:1px solid var(--line); border-radius:4px; background:var(--bg-2);
+  font-variant-numeric:tabular-nums;
+}
+.progress{position:absolute; left:0; bottom:-1px; height:2px; width:100%; transform-origin:left; transform:scaleX(0); background:var(--accent)}
+
+/* Hero */
+.hero{padding-block:calc(120px + env(safe-area-inset-top,0px)) 80px; position:relative; overflow:hidden}
+.hero-inner{position:relative; z-index:1; transform-origin:50% 20%}
+.hero h1{
+  font-size:clamp(4rem,15vw,13rem); font-weight:900; text-transform:uppercase;
+  line-height:.86; letter-spacing:-.005em; margin:0 0 28px;
+}
+.hero h1 em{font-style:normal; color:var(--accent)}
+.hero-row{display:grid; grid-template-columns:1.2fr .8fr; gap:32px; align-items:end}
+.hero-row > *{min-width:0}
+.actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:28px}
+.btn{
+  display:inline-flex; align-items:center; gap:10px; padding:13px 20px; border-radius:999px;
+  font-weight:600; font-size:.95rem; text-decoration:none; border:1px solid var(--line);
+  background:var(--bg-2); color:var(--fg); cursor:pointer; font-family:inherit; will-change:transform;
+  transition:border-color .2s, background .2s;
+}
+.btn.primary{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
+.btn:hover{border-color:var(--accent)}
+.btn .k{font-family:var(--font-mono); font-size:.75rem; opacity:.8}
+.facts{display:grid; gap:10px; font-family:var(--font-mono); font-size:.8rem}
+.facts div{display:flex; justify-content:space-between; gap:16px; border-bottom:1px solid var(--line); padding-bottom:8px}
+.facts span:first-child{color:var(--muted)}
+.scroll-hint{display:flex; align-items:center; gap:12px; margin-top:64px; font-family:var(--font-mono); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+.scroll-hint i{display:block; width:48px; height:1px; background:var(--muted); position:relative; overflow:hidden}
+.scroll-hint i::after{content:""; position:absolute; inset:0; background:var(--accent); transform:translateX(-100%)}
+@media (prefers-reduced-motion:no-preference){ .scroll-hint i::after{animation:sweep 1.8s ease-in-out infinite} @keyframes sweep{to{transform:translateX(100%)}} }
+.bgword{
+  position:absolute; right:-2vw; bottom:-4vw; z-index:0; pointer-events:none; user-select:none;
+  font-family:var(--font-display); font-weight:900; font-size:clamp(8rem,28vw,26rem); line-height:1;
+  color:var(--bg-3); opacity:.6; letter-spacing:-.02em;
+}
+
+/* Pinned stage */
+.stage{height:100vh; height:100svh; position:relative; overflow:hidden; border-top:1px solid var(--line)}
+.stage-inner{
+  height:100%; display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center;
+  max-width:1180px; margin-inline:auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+.stage-inner > *{min-width:0}
+.frame{
+  position:relative; justify-self:center; height:62vh; aspect-ratio:9/16; max-width:86vw;
+  border-radius:10px; overflow:hidden; background:var(--bg-3);
+  box-shadow:0 30px 80px -30px rgba(0,0,0,.6), 0 0 0 1px var(--line);
+}
+.frame canvas{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+.frame-ui{position:absolute; inset:0; font-family:var(--font-mono); color:#fff}
+.frame-ui .tag{position:absolute; top:10px; left:10px; font-size:.7rem; padding:3px 7px; background:rgba(0,0,0,.45); border-radius:3px}
+.frame-ui .ftc{position:absolute; top:10px; right:10px; font-size:.7rem; padding:3px 7px; background:rgba(0,0,0,.45); border-radius:3px; font-variant-numeric:tabular-nums}
+.frame-ui .safe{position:absolute; inset:5%; border:1px dashed rgba(255,255,255,.3); border-radius:4px}
+.count{
+  position:absolute; inset:0; display:grid; place-items:center; font-family:var(--font-display); font-weight:900;
+  font-size:min(38vh,30vw); line-height:1; color:#fff; text-shadow:0 10px 40px rgba(0,0,0,.4);
+}
+.wave{position:absolute; left:8%; right:8%; bottom:14%; height:18%; display:flex; align-items:center; gap:2.5%; opacity:0}
+.wave i{display:block; flex:1; background:#fff; opacity:.85; border-radius:2px; height:20%}
+.l3{
+  position:absolute; left:6%; bottom:10%; padding:10px 16px 10px 14px; border-left:4px solid var(--accent);
+  background:rgba(0,0,0,.55); backdrop-filter:blur(6px); opacity:0;
+}
+.l3 b{display:block; font-family:var(--font-display); font-weight:900; font-size:1.4rem; text-transform:uppercase; line-height:1}
+.l3 span{font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; opacity:.8}
+.captions{position:relative; min-height:240px}
+.cap{position:absolute; inset:0; display:grid; align-content:center; gap:12px}
+.cap .step{font-family:var(--font-mono); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent)}
+.cap h3{font-size:clamp(2rem,4.2vw,3.6rem); font-weight:900; text-transform:uppercase; line-height:.95}
+.cap p{color:var(--muted); max-width:40ch; font-size:1.05rem}
+.stage.is-static{height:auto; padding-block:64px}
+.stage.is-static .stage-inner{height:auto}
+.stage.is-static .frame{height:auto; width:100%; aspect-ratio:16/9}
+.stage.is-static .captions{display:grid; gap:28px}
+.stage.is-static .cap{position:static}
+.stage.is-static .count{display:none}
+.stage.is-static .wave,.stage.is-static .l3{opacity:1}
+
+/* Statement */
+.statement{padding-block:22vh}
+.statement p{
+  font-family:var(--font-display); font-weight:700; text-transform:uppercase; line-height:1.02;
+  font-size:clamp(2rem,6vw,5rem); max-width:22ch; margin-inline:auto; text-align:center; text-wrap:balance;
+}
+.statement .w{display:inline-block; margin-right:.22em}
+
+/* Work: horizontal reel */
+.gallery{position:relative; overflow:hidden; border-top:1px solid var(--line)}
+.g-head{padding-block:28px 20px}
+.g-head .wrap{display:flex; justify-content:space-between; align-items:end; gap:24px; flex-wrap:wrap}
+.g-head .note{max-width:34ch; color:var(--muted); font-size:.95rem}
+.track{display:flex; gap:24px; align-items:center; will-change:transform}
+.card{
+  position:relative; flex:none; border-radius:12px; overflow:hidden; background:var(--bg-3);
+  text-decoration:none; color:#fff; box-shadow:0 0 0 1px var(--line); transform-style:preserve-3d;
+}
+.card img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform .6s ease}
+.card:hover img{transform:scale(1.04)}
+.card .shade{position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.82) 0%, rgba(0,0,0,.25) 45%, rgba(0,0,0,0) 70%)}
+.card .info{position:absolute; left:0; right:0; bottom:0; padding:18px 20px; display:grid; gap:8px}
+.card h3{font-size:clamp(1.4rem,2.4vw,2.2rem); font-weight:900; text-transform:uppercase}
+.card .kind{font-size:.85rem; opacity:.85}
+.card .desc{font-size:.9rem; opacity:.85; max-width:46ch}
+.card .badge{position:absolute; top:12px; right:12px; font-family:var(--font-mono); font-size:.7rem; background:rgba(0,0,0,.55); padding:3px 7px; border-radius:3px}
+.card .go{position:absolute; top:12px; left:12px; font-size:.8rem; font-weight:600; color:var(--accent); background:rgba(0,0,0,.55); padding:3px 9px; border-radius:999px}
+.chips{display:flex; gap:6px; flex-wrap:wrap}
+.chip{font-family:var(--font-mono); font-size:.68rem; padding:3px 8px; border:1px solid rgba(255,255,255,.35); border-radius:999px}
+@media (min-width:900px){
+  .gallery{height:100vh; height:100svh; display:flex; flex-direction:column}
+  .g-head{flex:none}
+  .track{flex:1; padding-inline:var(--gutter) 10vw; width:max-content; min-width:100%}
+  .card{height:min(62vh,560px)}
+  .card.wide{aspect-ratio:16/9}
+  .card.tall{aspect-ratio:9/16}
+}
+@media (max-width:899px){
+  .gallery{padding-bottom:48px}
+  .track{flex-direction:column; align-items:stretch; padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .card{width:100%; max-width:100%}
+  .card.wide{aspect-ratio:16/9}
+  .card.tall{aspect-ratio:4/5}
+}
+
+/* More work grid + channels */
+.more{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px}
+.tile{position:relative; display:block; text-decoration:none; color:#fff; border-radius:10px; overflow:hidden; aspect-ratio:16/9; background:var(--bg-3); box-shadow:0 0 0 1px var(--line)}
+.tile img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform .6s ease}
+.tile:hover img{transform:scale(1.05)}
+.tile .shade{position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,.2) 55%, rgba(0,0,0,0) 80%)}
+.tile .info{position:absolute; left:0; right:0; bottom:0; padding:14px 16px; display:grid; gap:4px}
+.tile h3{font-size:1.25rem; font-weight:900; text-transform:uppercase}
+.tile .kind{font-size:.8rem; opacity:.8}
+.channels{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; margin-top:48px}
+.channel{display:grid; grid-template-columns:72px 1fr auto; gap:18px; align-items:center; padding:18px; border:1px solid var(--line); border-radius:12px; background:var(--bg-2); text-decoration:none; min-width:0; transition:border-color .2s}
+.channel:hover{border-color:var(--accent)}
+.channel img{width:72px; height:72px; border-radius:50%; object-fit:cover}
+.channel b{display:block; font-family:var(--font-display); font-weight:900; font-size:1.5rem; text-transform:uppercase; line-height:1}
+.channel span{display:block; color:var(--muted); font-size:.9rem; margin-top:4px}
+.channel .go{font-size:.85rem; font-weight:600; color:var(--accent); white-space:nowrap}
+
+/* Sections */
+section.plain{padding-block:96px; border-top:1px solid var(--line); position:relative; overflow:hidden}
+.sec-head{display:flex; align-items:end; justify-content:space-between; gap:24px; flex-wrap:wrap; margin-bottom:40px}
+.sec-head .note{max-width:36ch; color:var(--muted); font-size:.95rem}
+.tools{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 40px}
+.tool{display:grid; grid-template-columns:170px 1fr; gap:16px; padding-block:14px; border-bottom:1px solid var(--line); min-width:0}
+.tool b{font-weight:600}
+.tool span{color:var(--muted); font-size:.95rem}
+.services{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:32px 24px; margin-top:56px}
+.service{min-width:0}
+.service h3{display:flex; align-items:center; gap:10px; margin-bottom:8px}
+.service h3::before{content:""; width:9px; height:9px; background:var(--cool); transform:rotate(45deg); flex:none}
+.service p{color:var(--muted); font-size:.95rem}
+
+/* Rates */
+.rates{display:grid; gap:0; border-top:1px solid var(--line)}
+.rate{display:grid; grid-template-columns:1.2fr 1fr auto; gap:20px; align-items:baseline; padding-block:18px; border-bottom:1px solid var(--line); min-width:0}
+.rate b{font-family:var(--font-display); font-weight:700; font-size:1.5rem; text-transform:uppercase; line-height:1}
+.rate span{color:var(--muted); font-size:.95rem}
+.rate em{font-style:normal; font-family:var(--font-mono); font-size:1rem; color:var(--accent); white-space:nowrap; font-variant-numeric:tabular-nums}
+.rate-note{margin-top:20px; color:var(--muted); font-size:.9rem; max-width:60ch}
+
+/* About */
+.about{display:grid; grid-template-columns:1.1fr .9fr; gap:48px}
+.about > *{min-width:0}
+.about .bio{display:grid; gap:16px; font-size:1.1rem; max-width:58ch}
+.spec{font-family:var(--font-mono); font-size:.82rem; border:1px solid var(--line); border-radius:8px; overflow:hidden}
+.spec div{display:grid; grid-template-columns:130px 1fr; gap:12px; padding:11px 14px; border-bottom:1px solid var(--line); background:var(--bg-2)}
+.spec div:last-child{border-bottom:0}
+.spec span:first-child{color:var(--muted)}
+
+/* Contact */
+.contact{padding-block:140px 120px}
+.contact h2{font-size:clamp(3rem,11vw,9rem); line-height:.88}
+.email-row{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:36px}
+.email{font-family:var(--font-mono); font-size:clamp(1rem,3vw,1.6rem); user-select:all; word-break:break-all}
+.socials{display:flex; gap:10px; flex-wrap:wrap; margin-top:28px}
+.socials a{text-decoration:none; font-size:.9rem; font-weight:500; padding:9px 16px; border:1px solid var(--line); border-radius:999px; transition:border-color .2s}
+.socials a:hover{border-color:var(--accent)}
+
+footer{border-top:1px solid var(--line); padding-block:24px 32px; font-family:var(--font-mono); font-size:.75rem; color:var(--muted)}
+footer .wrap{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap}
+footer .brand{font-size:1rem}
+
+@media (max-width:860px){
+  .hero-row{grid-template-columns:1fr}
+  .about{grid-template-columns:1fr}
+  .services{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tools{grid-template-columns:1fr}
+  .more{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .channels{grid-template-columns:1fr}
+  .stage-inner{grid-template-columns:1fr; grid-template-rows:auto auto; align-content:center; gap:28px; padding-top:72px}
+  .frame{height:42vh}
+  .captions{min-height:200px}
+  .cap h3{font-size:clamp(1.7rem,7vw,2.6rem)}
+  .rate{grid-template-columns:1fr auto; gap:6px 16px}
+  .rate span{grid-column:1 / -1}
+}
+@media (max-width:560px){
+  .tc{display:none}
+  .nav{width:100%; margin-left:0; gap:14px}
+  .hero{padding-top:calc(150px + env(safe-area-inset-top,0px))}
+  .more{grid-template-columns:1fr}
+}
+@media (max-width:460px){
+  .services{grid-template-columns:1fr}
+  .tool{grid-template-columns:1fr; gap:4px}
+  .spec div{grid-template-columns:1fr; gap:2px}
+  section.plain{padding-block:64px}
+  .channel{grid-template-columns:56px 1fr; }
+  .channel img{width:56px; height:56px}
+  .channel .go{grid-column:2}
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="logo" viewBox="0 0 64 64">
+    <rect x="2" y="2" width="60" height="60" rx="13" fill="var(--accent)"/>
+    <text x="11" y="49" font-family="Big Shoulders Display, Arial Narrow, Impact, sans-serif" font-weight="900" font-size="46" fill="var(--accent-ink)">R</text>
+    <path d="M35 19 L55 32 L35 45 Z" fill="var(--accent-ink)"/>
+  </symbol>
+</svg>
+
+<header class="top" id="top-bar">
+  <div class="wrap">
+    <a class="brand" href="#hero"><svg class="mark"><use href="#logo"/></svg><span id="brand">Rishi Verma</span></a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#work">Work</a>
+      <a href="#toolkit">Toolkit</a>
+      <a href="#rates">Rates</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="tc" id="tc" aria-label="Timecode">00:00:00:00</div>
+  </div>
+  <div class="progress" id="progress"></div>
+</header>
+
+<main>
+  <section class="hero" id="hero">
+    <div class="bgword" aria-hidden="true" data-parallax>24FPS</div>
+    <div class="wrap hero-inner" id="hero-inner">
+      <p class="eyebrow" id="role">Video editor &middot; AI filmmaker &middot; Motion designer</p>
+      <h1 id="name"><span class="line"><span>Rishi</span></span><span class="line"><span><em>Verma</em></span></span></h1>
+      <div class="hero-row">
+        <div>
+          <p class="lede" id="pitch"></p>
+          <div class="actions" data-reveal>
+            <a class="btn primary" id="reel-btn" href="#work" data-magnet>See the work <span class="k">&#9654;</span></a>
+            <a class="btn" href="#contact" data-magnet>Get in touch</a>
+          </div>
+        </div>
+        <div class="facts" id="facts" data-reveal></div>
+      </div>
+      <div class="scroll-hint" data-reveal><i></i><span>Scroll to scrub</span></div>
+    </div>
+  </section>
+
+  <section class="stage" id="stage" aria-label="How I work">
+    <div class="stage-inner">
+      <div class="frame" id="frame">
+        <canvas id="frame-canvas" width="1280" height="1280"></canvas>
+        <div class="frame-ui">
+          <span class="safe"></span>
+          <span class="tag" id="ratio-tag">9:16</span>
+          <span class="ftc" id="frame-tc">00:00:00:00</span>
+          <div class="count" id="count">3</div>
+          <div class="wave" id="wave"></div>
+          <div class="l3" id="l3"><b id="l3-name">Rishi Verma</b><span id="l3-role">AI film &middot; Edit &middot; Motion</span></div>
+        </div>
+      </div>
+      <div class="captions">
+        <div class="cap" data-step="1">
+          <span class="step">Step 1 of 3</span>
+          <h3>Hook in the first three seconds</h3>
+          <p>Reels and shorts are vertical first. The opening frame has to earn the next one, so every cut starts with the moment that stops the thumb.</p>
+        </div>
+        <div class="cap" data-step="2">
+          <span class="step">Step 2 of 3</span>
+          <h3>Cut to the beat</h3>
+          <p>Wedding films, lyric videos, rallies: edits land on the downbeat and the line. Pacing is built on the waveform, not guessed.</p>
+        </div>
+        <div class="cap" data-step="3">
+          <span class="step">Step 3 of 3</span>
+          <h3>Generate what can&rsquo;t be shot</h3>
+          <p>Realistic scenes, characters and whole stories made with AI, then finished like a film: pacing, motion graphics, sound and color.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="statement" id="statement">
+    <div class="wrap"><p id="statement-text"></p></div>
+  </section>
+
+  <section class="gallery" id="work">
+    <div class="g-head">
+      <div class="wrap">
+        <div>
+          <p class="eyebrow">Selected work</p>
+          <h2>Work</h2>
+        </div>
+        <p class="note">AI films for a channel with a mass audience, plus weddings and events. Each card opens the video on YouTube.</p>
+      </div>
+    </div>
+    <div class="track" id="track"></div>
+  </section>
+
+  <section class="plain" id="more-work">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <p class="eyebrow">More work</p>
+          <h2 class="line"><span>Weddings, events &amp; reels</span></h2>
+        </div>
+        <p class="note">Highlights, teasers and event coverage cut for a studio in Rajasthan, plus two YouTube channels I run end to end.</p>
+      </div>
+      <div class="more" id="more" data-reveal-group></div>
+      <div class="channels" id="channels" data-reveal-group></div>
+    </div>
+  </section>
+
+  <section class="plain" id="toolkit">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <p class="eyebrow">Toolkit</p>
+          <h2 class="line"><span>Tools &amp; services</span></h2>
+        </div>
+      </div>
+      <div class="tools" id="tools" data-reveal-group></div>
+      <div class="services" id="services" data-reveal-group></div>
+    </div>
+  </section>
+
+  <section class="plain" id="rates">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <p class="eyebrow">Rates</p>
+          <h2 class="line"><span>Starting rates</span></h2>
+        </div>
+        <p class="note">Starting points, not fixed quotes. Send the brief and I&rsquo;ll give a firm number within a day.</p>
+      </div>
+      <div class="rates" id="rates-list" data-reveal-group></div>
+      <p class="rate-note" id="rate-note" data-reveal></p>
+    </div>
+  </section>
+
+  <section class="plain" id="about">
+    <div class="bgword" aria-hidden="true" data-parallax style="right:auto;left:-4vw;bottom:auto;top:-2vw">CUT</div>
+    <div class="wrap" style="position:relative">
+      <div class="sec-head">
+        <div>
+          <p class="eyebrow">About</p>
+          <h2 class="line"><span>About</span></h2>
+        </div>
+      </div>
+      <div class="about">
+        <div class="bio" id="bio" data-reveal-group></div>
+        <div class="spec" id="spec" data-reveal></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="plain contact" id="contact">
+    <div class="wrap">
+      <p class="eyebrow">Contact</p>
+      <h2><span class="line"><span>Let&rsquo;s cut</span></span><span class="line"><span>something</span></span></h2>
+      <p class="lede" style="margin-top:20px" id="contact-note" data-reveal></p>
+      <div class="email-row" data-reveal>
+        <span class="email" id="email"></span>
+        <button class="btn" id="copy" type="button" data-magnet>Copy email</button>
+      </div>
+      <div class="socials" id="socials" data-reveal></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#hero"><svg class="mark" style="width:24px;height:24px"><use href="#logo"/></svg><span id="foot-left">Rishi Verma</span></a>
+    <span>&copy; 2026 &middot; Rendered at 24 fps &middot; 1080p &amp; 4K delivery</span>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+<script>
+/* ===== EDIT THIS BLOCK. Everything on the page renders from it. ===== */
+const PORTFOLIO = {
+  name: "Rishi Verma",
+  role: "Video editor · AI filmmaker · Motion designer",
+  pitch: "Ten years of editing, now with AI in the pipeline. Reels, AI films, animation and wedding edits that hold attention past the first second.",
+  statement: "I cut reels, AI films, animation and wedding edits that hold attention past the first second.",
+  facts: [
+    ["Based in", "India"],
+    ["Experience", "10+ years"],
+    ["Availability", "Open for freelance"],
+  ],
+  // featured: true puts the project in the horizontal reel; the rest go to the grid below.
+  projects: [
+    { id: "YRbf9-NBHzI", title: "Kabir Sahib Prakat Leela", kind: "AI movie", client: "Sant Rampal Ji Maharaj", tools: ["AI video", "After Effects", "Premiere Pro"], desc: "Full-length AI film. I built and edited major parts: generated scenes and characters, animation, cut and finish.", featured: true },
+    { id: "ulR2wgl9Pi8", title: "Dastan-e-Shekh Farid", kind: "AI movie", client: "Sant Rampal Ji Maharaj", tools: ["AI video", "After Effects", "DaVinci Resolve"], desc: "The story of Shekh Farid told with AI-generated scenes, cut to narration and finished with motion graphics and color.", featured: true },
+    { id: "s-vfv9PdJwo", title: "Sau Saman: AI Story", kind: "AI story film", client: "Sant Rampal Ji Maharaj", tools: ["AI video", "Premiere Pro"], desc: "A devotional story rebuilt as an AI film: realistic characters, consistent sets, edited for emotion.", featured: true },
+    { id: "hmI5gh3y96w", title: "Kashi Bhandara: 512 Years Ago", kind: "AI historical film", client: "Sant Rampal Ji Maharaj", tools: ["AI video", "After Effects"], desc: "A historical event from 512 years ago recreated with AI visuals and period detail, then cut as a film.", featured: true },
+    { id: "VfJC44zTrcI", title: "Nirvana Diwas: AI Version", kind: "AI long-form", client: "Sant Rampal Ji Maharaj", tools: ["AI video", "Premiere Pro", "After Effects"], desc: "Long-form AI version of a Nirvana Diwas program: generated visuals cut to the script with titles and graphics.", featured: true },
+    { id: "GNrdaEvnY20", title: "Raju & Nisha: Pre-wedding Film", kind: "Pre-wedding", client: "Khushi Studio Newai", tools: ["Premiere Pro", "DaVinci Resolve"], desc: "Pre-wedding film cut to the song, graded warm, delivered for the big screen and for phones.", featured: true },
+    { id: "qkuiYdebOEM", title: "Kiran & Sobharam: Wedding Film", kind: "Wedding film", client: "Khushi Studio Newai", tools: ["Premiere Pro", "DaVinci Resolve"], desc: "Full wedding edit: ceremonies, entries and dance, paced to the music with clean color.", featured: true },
+    { id: "kqDXxvBnU-o", title: "Dulhan Entry: Wedding Highlight", kind: "Wedding highlight", client: "Khushi Studio Newai", tools: ["Premiere Pro", "After Effects"], desc: "Bride-entry highlight built for social: slow-motion beats, titles and a hook in the first seconds.", featured: true },
+    { id: "r81FAUNjmAg", title: "Raju & Nisha: Teaser", kind: "Pre-wedding teaser", client: "Khushi Studio Newai", tools: ["Premiere Pro"], desc: "Short teaser cut from the pre-wedding shoot." },
+    { id: "dxQ39gCuo_U", title: "Wedding Highlights Teaser, Jaipur", kind: "Wedding teaser", client: "Khushi Studio Newai", tools: ["Premiere Pro"], desc: "Dialogue-led wedding teaser with dance highlights." },
+    { id: "jgPsd-QwNK4", title: "Wedding Highlights, Niwai", kind: "Wedding highlight", client: "Khushi Studio Newai", tools: ["Premiere Pro"], desc: "Highlights reel for a wedding in Niwai." },
+    { id: "GJ-tq-0RqpA", title: "Aaja Sanam: Wedding Highlight", kind: "Wedding highlight", client: "Khushi Studio Newai", tools: ["Premiere Pro"], desc: "Old-is-gold song highlight for a 2024 wedding." },
+    { id: "LI0cmnScCVs", title: "Jhirana Mahasabha: Rally Coverage", kind: "Event / political", client: "Khushi Studio Newai", tools: ["Premiere Pro"], desc: "Rally coverage cut for fast social turnaround." },
+    { id: "diIK0TzruxY", title: "Nomination Rally: Prahlad Narayan Bairwa", kind: "Event / political", client: "Khushi Studio Newai", tools: ["Premiere Pro"], desc: "Nomination rally edit with titles and crowd beats." },
+    { id: "tMS22kN1Jcg", title: "Pratibha Samman Samaroh 2023", kind: "Event coverage", client: "Khushi Studio Newai", tools: ["Premiere Pro"], desc: "Award ceremony coverage, edited and titled." },
+  ],
+  channels: [
+    { name: "RISHI ANIMATION", handle: "@rishianimationart", img: "site/yt/ch-rishianimationart.jpg", url: "https://www.youtube.com/@rishianimationart", note: "My animation channel. Every video is made by me." },
+    { name: "SA True Talk", handle: "@SATrueTalk", img: "site/yt/ch-satruetalk.jpg", url: "https://www.youtube.com/@SATrueTalk", note: "Every short and long-form video, start to finish." },
+  ],
+  tools: [
+    ["After Effects", "Motion graphics, kinetic type, compositing, VFX"],
+    ["Premiere Pro", "Editing, pacing, multicam, delivery"],
+    ["DaVinci Resolve Studio", "Color grading and finishing"],
+    ["Adobe Animate", "2D character animation"],
+    ["Photoshop", "Thumbnails, cleanup, assets"],
+    ["Blender", "3D models, scenes and renders"],
+    ["Audacity", "Voice cleanup and sound"],
+    ["AI stack", "Claude, ChatGPT, Gemini, plus AI video and image generators for scenes, characters and voices"],
+  ],
+  services: [
+    ["AI films & AI video", "Realistic scenes, characters and full stories generated with AI, then edited and finished like a film."],
+    ["Reels & shorts", "Vertical cuts built for the first three seconds, with captions, hooks and sound design."],
+    ["Motion graphics & animation", "Titles, lower thirds, explainers, lyric videos and 2D character animation in After Effects and Animate."],
+    ["Wedding & event films", "Pre-weddings, highlights, teasers, bride entries, rallies and ceremonies, cut to the music."],
+    ["Property & promo reels", "Real-estate and affiliate reels that show the space fast and end on a clear call."],
+    ["3D & finishing", "Blender scenes and renders, color grading in Resolve, clean audio, exports for every platform."],
+  ],
+  rates: [
+    ["Reels & shorts", "Up to 60 s, captions and sound included", "from ₹1,500 / reel"],
+    ["YouTube long-form", "Up to 15 min, titles and graphics included", "from ₹6,000 / video"],
+    ["AI film & AI video", "Script to finished film, per finished minute", "from ₹4,000 / min"],
+    ["Motion graphics & 2D animation", "Explainers, lyric videos, character animation", "from ₹5,000 / min"],
+    ["Wedding & pre-wedding films", "Highlight or full film with color grade", "from ₹8,000 / film"],
+    ["Property & promo reels", "Real-estate and affiliate reels", "from ₹2,000 / reel"],
+    ["3D (Blender)", "Models, scenes, product renders", "quote on brief"],
+  ],
+  rateNote: "Prices in INR. Two revision rounds included. Bulk, monthly retainer and channel-management pricing available.",
+  bio: [
+    "I have edited video for ten years: weddings and pre-weddings, political rallies and events, reels, long-form YouTube, lyric and devotional videos. Every kind of cut a client has asked for, I have delivered.",
+    "Since AI video arrived I have built my workflow around it. I generate realistic footage, characters and full AI films, then finish them with real editing: pacing, motion graphics, sound and color. I also animate in After Effects and Adobe Animate and build 3D in Blender. Two YouTube channels run entirely on my work: RISHI ANIMATION and SA True Talk.",
+  ],
+  spec: [
+    ["Formats", "9:16 · 1:1 · 16:9"],
+    ["Resolution", "1080p · 4K"],
+    ["Frame rates", "24 · 25 · 30 · 60 fps"],
+    ["Turnaround", "Reels 1–2 days · films by brief"],
+    ["Delivery", "MP4 (H.264 / H.265), ProRes on request"],
+    ["Languages", "Hindi · English"],
+  ],
+  contactNote: "Open for freelance edits, AI film projects, animation work and monthly retainers.",
+  email: "vermarishipal52@gmail.com",
+  socials: [
+    ["Instagram @rishipal.018", "https://www.instagram.com/rishipal.018"],
+    ["YouTube: RISHI ANIMATION", "https://www.youtube.com/@rishianimationart"],
+    ["YouTube: SA True Talk", "https://www.youtube.com/@SATrueTalk"],
+  ],
+};
+/* ===== End of editable block ===== */
+
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => Array.from(document.querySelectorAll(s));
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const FPS = 24;
+function tc(frames) {
+  const f = frames % FPS, s = Math.floor(frames / FPS);
+  return [Math.floor(s / 3600), Math.floor(s / 60) % 60, s % 60, f].map((n) => String(n).padStart(2, "0")).join(":");
+}
+const ytUrl = (id) => "https://www.youtube.com/watch?v=" + id;
+
+function render() {
+  const P = PORTFOLIO;
+  $("#brand").textContent = P.name;
+  $("#foot-left").textContent = P.name;
+  $("#role").textContent = P.role;
+  $("#l3-name").textContent = P.name;
+  $("#pitch").textContent = P.pitch;
+  $("#facts").innerHTML = P.facts.map(([k, v]) => `<div><span>${esc(k)}</span><span>${esc(v)}</span></div>`).join("");
+  $("#statement-text").innerHTML = P.statement.split(/\s+/).map((w) => `<span class="w">${esc(w)}</span>`).join("");
+
+  const featured = P.projects.filter((p) => p.featured);
+  const rest = P.projects.filter((p) => !p.featured);
+  $("#track").innerHTML = featured.map((p) => `
+    <a class="card wide" href="${ytUrl(p.id)}" target="_blank" rel="noopener">
+      <img src="site/yt/${p.id}.jpg" alt="" width="1280" height="720">
+      <div class="shade"></div>
+      <span class="badge">16:9</span>
+      <span class="go">Watch ↗</span>
+      <div class="info">
+        <h3>${esc(p.title)}</h3>
+        <p class="kind">${esc(p.kind)} · ${esc(p.client)}</p>
+        <p class="desc">${esc(p.desc)}</p>
+        <div class="chips">${p.tools.map((t) => `<span class="chip">${esc(t)}</span>`).join("")}</div>
+      </div>
+    </a>`).join("");
+  $("#more").innerHTML = rest.map((p) => `
+    <a class="tile" href="${ytUrl(p.id)}" target="_blank" rel="noopener">
+      <img src="site/yt/${p.id}.jpg" alt="" loading="lazy" width="1280" height="720">
+      <div class="shade"></div>
+      <div class="info"><h3>${esc(p.title)}</h3><p class="kind">${esc(p.kind)} · ${esc(p.client)}</p></div>
+    </a>`).join("");
+  $("#channels").innerHTML = P.channels.map((c) => `
+    <a class="channel" href="${esc(c.url)}" target="_blank" rel="noopener">
+      <img src="${esc(c.img)}" alt="" width="72" height="72">
+      <div><b>${esc(c.name)}</b><span>${esc(c.handle)} · ${esc(c.note)}</span></div>
+      <span class="go">Open channel ↗</span>
+    </a>`).join("");
+
+  $("#tools").innerHTML = P.tools.map(([n, u]) => `<div class="tool"><b>${esc(n)}</b><span>${esc(u)}</span></div>`).join("");
+  $("#services").innerHTML = P.services.map(([n, d]) => `<div class="service"><h3>${esc(n)}</h3><p>${esc(d)}</p></div>`).join("");
+  $("#rates-list").innerHTML = P.rates.map(([n, d, pr]) => `<div class="rate"><b>${esc(n)}</b><span>${esc(d)}</span><em>${esc(pr)}</em></div>`).join("");
+  $("#rate-note").textContent = P.rateNote;
+  $("#bio").innerHTML = P.bio.map((t) => `<p>${esc(t)}</p>`).join("");
+  $("#spec").innerHTML = P.spec.map(([k, v]) => `<div><span>${esc(k)}</span><span>${esc(v)}</span></div>`).join("");
+  $("#contact-note").textContent = P.contactNote;
+  $("#email").textContent = P.email;
+  $("#socials").innerHTML = P.socials.map(([n, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(n)} ↗</a>`).join("");
+  $("#wave").innerHTML = Array.from({ length: 28 }, () => "<i></i>").join("");
+  drawFrame();
+}
+
+// Background for the pinned monitor: two-tone gradient with scan bars.
+function drawFrame() {
+  const c = $("#frame-canvas"), ctx = c.getContext("2d");
+  const W = c.width, H = c.height;
+  const g = ctx.createLinearGradient(0, 0, W, H);
+  g.addColorStop(0, "hsl(222 38% 22%)");
+  g.addColorStop(1, "hsl(262 45% 12%)");
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  const s = ctx.createRadialGradient(W * 0.7, H * 0.3, 0, W * 0.7, H * 0.3, Math.max(W, H) * 0.8);
+  s.addColorStop(0, "hsl(40 80% 55% / .35)"); s.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = s; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = "rgba(0,0,0,.18)";
+  for (let y = 0; y < H; y += 6) ctx.fillRect(0, y, W, 2);
+}
+
+// Copy email with a text-select fallback.
+$("#copy").addEventListener("click", () => {
+  const btn = $("#copy"), el = $("#email"), text = el.textContent;
+  const reset = () => setTimeout(() => (btn.textContent = "Copy email"), 1500);
+  const done = () => { btn.textContent = "Copied"; reset(); };
+  const fallback = () => {
+    const r = document.createRange(); r.selectNodeContents(el);
+    const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    btn.textContent = "Selected"; reset();
+  };
+  try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
+});
+
+render();
+
+/* ===== Motion ===== */
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const hasGsap = typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined";
+
+function frameSize(r) {
+  const vw = innerWidth, vh = innerHeight, desk = vw > 860;
+  const maxW = desk ? Math.min(vw * 0.46, 860) : vw - 40;
+  const maxH = desk ? vh * 0.64 : vh * 0.42;
+  const w = Math.min(maxW, maxH * r);
+  return [Math.round(w), Math.round(w / r)];
+}
+
+if (!hasGsap || reduce) {
+  $("#stage").classList.add("is-static");
+  $("#ratio-tag").textContent = "16:9";
+  const onScroll = () => { $("#tc").textContent = tc(Math.round(scrollY / 5)); };
+  addEventListener("scroll", onScroll, { passive: true }); onScroll();
+} else {
+  gsap.registerPlugin(ScrollTrigger);
+
+  let lenis = null;
+  if (typeof Lenis !== "undefined") {
+    lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
+    lenis.on("scroll", ScrollTrigger.update);
+    gsap.ticker.add((t) => lenis.raf(t * 1000));
+    gsap.ticker.lagSmoothing(0);
+  }
+  $$('a[href^="#"]').forEach((a) => a.addEventListener("click", (e) => {
+    const t = document.querySelector(a.getAttribute("href"));
+    if (!t) return;
+    e.preventDefault();
+    if (lenis) lenis.scrollTo(t, { offset: -70, duration: 1.4 }); else t.scrollIntoView({ behavior: "smooth" });
+  }));
+
+  const bar = $("#top-bar"), tcEl = $("#tc"), prog = $("#progress");
+  ScrollTrigger.create({
+    start: 0, end: "max",
+    onUpdate(self) {
+      tcEl.textContent = tc(Math.round(self.scroll() / 5));
+      prog.style.transform = `scaleX(${self.progress})`;
+      bar.classList.toggle("hide", self.direction === 1 && self.scroll() > 160);
+    },
+  });
+
+  const intro = gsap.timeline({ defaults: { ease: "power4.out" } });
+  intro.from("#role", { y: 20, opacity: 0, duration: .8 }, 0)
+       .from("#name .line > span", { yPercent: 110, duration: 1.2, stagger: .1 }, .1)
+       .from("#pitch", { y: 30, opacity: 0, duration: 1 }, .6)
+       .from("#hero [data-reveal]", { y: 30, opacity: 0, duration: 1, stagger: .1 }, .75);
+  gsap.to("#hero-inner", {
+    scale: .9, opacity: 0, y: -80, ease: "none",
+    scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: true },
+  });
+  $$("[data-parallax]").forEach((el) => gsap.to(el, {
+    yPercent: -35, ease: "none",
+    scrollTrigger: { trigger: el.parentElement, start: "top bottom", end: "bottom top", scrub: true },
+  }));
+
+  // Pinned stage: 9:16 -> 1:1 -> 16:9 while captions cross-fade.
+  const frame = $("#frame"), ratioTag = $("#ratio-tag"), frameTc = $("#frame-tc"), count = $("#count");
+  const waveBars = $$("#wave i");
+  const setStart = () => { const [w, h] = frameSize(9 / 16); gsap.set(frame, { width: w, height: h }); };
+  setStart();
+  ScrollTrigger.addEventListener("refreshInit", setStart);
+  const stage = gsap.timeline({
+    defaults: { ease: "none" },
+    scrollTrigger: {
+      trigger: "#stage", start: "top top", end: "+=320%", pin: true, scrub: .8, invalidateOnRefresh: true,
+      onUpdate(self) {
+        const p = self.progress;
+        frameTc.textContent = tc(Math.round(p * FPS * 60));
+        const step = p < 1 / 3 ? 0 : p < 2 / 3 ? 1 : 2;
+        ratioTag.textContent = ["9:16", "1:1", "16:9"][step];
+        const local = (p * 3) % 1;
+        count.textContent = String(3 - Math.min(2, Math.floor(local * 3)));
+        waveBars.forEach((b, i) => { b.style.height = (18 + 70 * Math.abs(Math.sin(p * 40 + i * .7) * Math.cos(i * .3))) + "%"; });
+      },
+    },
+  });
+  stage.fromTo('.cap[data-step="1"]', { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: .25, ease: "power2.out" }, 0)
+       .to('.cap[data-step="1"]', { autoAlpha: 0, y: -40, duration: .25, ease: "power2.in" }, .75)
+       .to(count, { autoAlpha: 0, duration: .2 }, .8)
+       .to(frame, { width: () => frameSize(1)[0], height: () => frameSize(1)[1], duration: .5, ease: "power2.inOut" }, .85)
+       .to("#wave", { autoAlpha: 1, duration: .2 }, 1.05)
+       .fromTo('.cap[data-step="2"]', { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: .25, ease: "power2.out" }, 1.1)
+       .to('.cap[data-step="2"]', { autoAlpha: 0, y: -40, duration: .25, ease: "power2.in" }, 1.75)
+       .to("#wave", { autoAlpha: 0, duration: .2 }, 1.8)
+       .to(frame, { width: () => frameSize(16 / 9)[0], height: () => frameSize(16 / 9)[1], duration: .5, ease: "power2.inOut" }, 1.85)
+       .fromTo('.cap[data-step="3"]', { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: .25, ease: "power2.out" }, 2.1)
+       .fromTo("#l3", { xPercent: -130, autoAlpha: 0 }, { xPercent: 0, autoAlpha: 1, duration: .3, ease: "power3.out" }, 2.35)
+       .to({}, { duration: .65 });
+
+  gsap.set("#statement-text .w", { opacity: .14 });
+  gsap.to("#statement-text .w", {
+    opacity: 1, stagger: .06, ease: "none",
+    scrollTrigger: { trigger: "#statement", start: "top 70%", end: "bottom 60%", scrub: true },
+  });
+
+  const mm = gsap.matchMedia();
+  mm.add("(min-width: 900px)", () => {
+    const track = $("#track");
+    const dist = () => Math.max(0, track.scrollWidth - innerWidth);
+    gsap.to(track, {
+      x: () => -dist(), ease: "none",
+      scrollTrigger: { trigger: "#work", start: "top top", end: () => "+=" + dist(), pin: true, scrub: 1, invalidateOnRefresh: true },
+    });
+    $$(".card").forEach((card) => {
+      const rx = gsap.quickTo(card, "rotationX", { duration: .5, ease: "power3" });
+      const ry = gsap.quickTo(card, "rotationY", { duration: .5, ease: "power3" });
+      gsap.set(card, { transformPerspective: 900 });
+      card.addEventListener("mousemove", (e) => {
+        const r = card.getBoundingClientRect();
+        ry(((e.clientX - r.left) / r.width - .5) * 10);
+        rx(-((e.clientY - r.top) / r.height - .5) * 10);
+      });
+      card.addEventListener("mouseleave", () => { rx(0); ry(0); });
+    });
+  });
+  mm.add("(max-width: 899px)", () => {
+    $$(".card").forEach((card) => gsap.from(card, {
+      y: 60, opacity: 0, duration: 1, ease: "power3.out",
+      scrollTrigger: { trigger: card, start: "top 88%" },
+    }));
+  });
+
+  $$("main > section:not(#hero) [data-reveal]").forEach((el) => gsap.from(el, {
+    y: 40, opacity: 0, duration: 1, ease: "power3.out",
+    scrollTrigger: { trigger: el, start: "top 88%" },
+  }));
+  $$("[data-reveal-group]").forEach((g) => gsap.from(g.children, {
+    y: 36, opacity: 0, duration: .9, stagger: .08, ease: "power3.out",
+    scrollTrigger: { trigger: g, start: "top 85%" },
+  }));
+  $$("main > section:not(#hero) .line > span").forEach((el) => gsap.from(el, {
+    yPercent: 110, duration: 1.1, ease: "power4.out",
+    scrollTrigger: { trigger: el, start: "top 90%" },
+  }));
+
+  if (matchMedia("(pointer: fine)").matches) {
+    $$("[data-magnet]").forEach((b) => {
+      const xTo = gsap.quickTo(b, "x", { duration: .45, ease: "power3" });
+      const yTo = gsap.quickTo(b, "y", { duration: .45, ease: "power3" });
+      b.addEventListener("mousemove", (e) => {
+        const r = b.getBoundingClientRect();
+        xTo((e.clientX - r.left - r.width / 2) * .28);
+        yTo((e.clientY - r.top - r.height / 2) * .28);
+      });
+      b.addEventListener("mouseleave", () => { xTo(0); yTo(0); });
+    });
+  }
+
+  const refresh = () => ScrollTrigger.refresh();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(refresh);
+  addEventListener("load", refresh);
+}
+</script>
+</html>
